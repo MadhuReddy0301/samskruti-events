@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  role      String   // admin / organizer / participant
+  createdAt DateTime @default(now())
+}
+
+model Event {
+  id               String   @id @default(uuid())
+  title            String
+  description      String
+  branch           String
+  price            Int
+  date             DateTime
+  maxParticipants  Int
+  posterUrl        String
+  videoUrl         String
+}
+
+model Registration {
+  id        String   @id @default(uuid())
+  name      String
+  rollNo    String
+  email     String
+  phone     String
+  teamName  String?
+  teamInfo  String?
+  paymentUrl String
+  status    String   @default("pending")
+  eventId   String
+  createdAt DateTime @default(now())
+}
