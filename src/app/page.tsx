@@ -69,7 +69,7 @@ export default function HomePage() {
       {/* 🔥 EVENT CARDS */}
       <div className="grid md:grid-cols-2 gap-12">
 
-        {filteredEvents.map((event) => (
+        {events.map((event) => (
           <div
             key={event.id}
             className="flex bg-gradient-to-br from-[#0f172a] to-[#020617]
