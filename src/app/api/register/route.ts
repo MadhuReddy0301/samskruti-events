@@ -17,6 +17,7 @@ export async function POST(req: Request) {
         teamInfo: body.teamInfo ?? null,
         paymentUrl: body.paymentUrl,
         status: "pending",
+        eventId: body.eventId,
       } as any ,
     });
 
