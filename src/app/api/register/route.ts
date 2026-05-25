@@ -1,38 +1,39 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-  const formData = await req.formData();
+  try {
+    const body = await req.json();
 
-  const name = formData.get("name") as string;
-  const rollNo = formData.get("rollNo") as string;
-  const email = formData.get("email") as string;
-  const phone = formData.get("phone") as string;
+    const registration = await prisma.registration.create({
+      data: {
+        name: body.name ,
+        email: body.email,
+        phone: body.phone,
+        rollNo: body.rollNo,
+        teamName: body.teamName ?? null,
+        teamInfo: body.teamInfo ?? null,
+        paymentUrl: body.paymentUrl,
+        status: "pending",
+      } as any ,
+    });
 
-  const teamName = formData.get("teamName") as string;
-  const member1 = formData.get("member1") as string;
-  const member2 = formData.get("member2") as string;
-  const member3 = formData.get("member3") as string;
+    return NextResponse.json({
+      success: true,
+      registration,
+    });
 
-  const paymentUrl = formData.get("paymentUrl") as string;
-  const eventId = formData.get("eventId") as string;
+  } catch (error: any) {
+    console.error("REGISTER ERROR:", error);
 
-  const teamInfo = [member1, member2, member3]
-    .filter((m) => m && m.trim() !== "")
-    .join(", ");
-
-  await prisma.registration.create({
-    data: {
-      name,
-      rollNo,
-      email,
-      phone,
-      eventId,
-      teamName: teamName || null,
-      teamInfo: teamInfo || null,
-      paymentUrl,
-    },
-  });
-
-  return NextResponse.json({ success: true });
+    return NextResponse.json(
+      {
+        error: "Registration failed",
+        details: error.message,
+      },
+      { status: 500 }
+    );
+  }
 }

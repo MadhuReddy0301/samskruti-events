@@ -70,7 +70,7 @@ export default function Home() {
       alert("Registered successfully!");
     } catch (error) {
       console.error(error);
-      alert("Registration failed");
+      alert("Registration failed - check console");
     }
   };
 
