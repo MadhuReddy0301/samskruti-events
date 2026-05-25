@@ -1,52 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-type Event = {
-  id: string;
-  title: string;
-  description: string;
-  branch: string;
-  price: number;
-  date: string;
-  maxParticipants: number;
-  posterUrl: string;
-  videoUrl: string;
-};
+import { useState } from "react";
 
 export default function Home() {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    rollNo: "",
+    teamName: "",
+    teamInfo: "",
+    paymentUrl: "",
+  });
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch("/api/get-events");
-        const data = await res.json();
+  const handleChange = (e: any) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-        if (Array.isArray(data)) {
-          setEvents(data);
-        } else {
-          setEvents([]);
-        }
-      } catch (error) {
-        console.error(error);
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
-
-  // 🔥 REGISTER FUNCTION
-  const handleRegister = async () => {
-    const name = prompt("Enter your name");
-    const email = prompt("Enter your email");
-
-    if (!name || !email) return;
-
+  const handleSubmit = async () => {
     try {
       const res = await fetch("/api/register", {
         method: "POST",
@@ -54,73 +25,38 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
-          email,
-          rollNo: "123",
-          phone: "9999999999",
-          teamName: "Team A",
-          teamInfo: "Info",
-          paymentUrl: "test",
+          ...form,
+
+          // 🔥 IMPORTANT: add eventId
+          eventId: "417e7867-bb86-4387-9dde-3c411042d36c",
         }),
       });
 
       const data = await res.json();
-      console.log(data);
 
-      alert("Registered successfully!");
-    } catch (error) {
-      console.error(error);
-      alert("Registration failed - check console");
+      if (res.ok) {
+        alert("Registration successful ✅");
+      } else {
+        alert("Error: " + data.error);
+      }
+    } catch (err) {
+      alert("Something went wrong ❌");
     }
   };
 
   return (
-    <main style={{ padding: "20px", color: "white" }}>
-      <h1 style={{ fontSize: "32px", fontWeight: "bold" }}>
-        Samskruti Events
-      </h1>
+    <div style={{ padding: "20px" }}>
+      <h1>Register</h1>
 
-      {loading && <p>Loading events...</p>}
+      <input name="name" placeholder="Name" onChange={handleChange} /><br />
+      <input name="email" placeholder="Email" onChange={handleChange} /><br />
+      <input name="phone" placeholder="Phone" onChange={handleChange} /><br />
+      <input name="rollNo" placeholder="Roll No" onChange={handleChange} /><br />
+      <input name="teamName" placeholder="Team Name" onChange={handleChange} /><br />
+      <input name="teamInfo" placeholder="Team Info" onChange={handleChange} /><br />
+      <input name="paymentUrl" placeholder="Payment URL" onChange={handleChange} /><br />
 
-      {!loading && events.length === 0 && (
-        <p>No events available</p>
-      )}
-
-      <div style={{ marginTop: "20px" }}>
-        {(events || []).map((event) => (
-          <div
-            key={event.id}
-            style={{
-              border: "1px solid #444",
-              padding: "15px",
-              marginBottom: "15px",
-              borderRadius: "8px",
-            }}
-          >
-            <h2>{event.title}</h2>
-            <p>{event.description}</p>
-            <p><b>Branch:</b> {event.branch}</p>
-            <p><b>Price:</b> ₹{event.price}</p>
-            <p><b>Date:</b> {new Date(event.date).toLocaleDateString()}</p>
-
-            {/* 🔥 REGISTER BUTTON */}
-            <button
-              onClick={handleRegister}
-              style={{
-                marginTop: "10px",
-                padding: "8px 12px",
-                backgroundColor: "purple",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Register
-            </button>
-          </div>
-        ))}
-      </div>
-    </main>
+      <button onClick={handleSubmit}>Register</button>
+    </div>
   );
 }
