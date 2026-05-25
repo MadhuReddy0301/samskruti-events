@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { name, email, phone, rollNo, branch, eventId } = body;
+    const { name, email, phone, rollNo, branch, eventId } = await req.json();
 
     if (!eventId) {
       return NextResponse.json(
