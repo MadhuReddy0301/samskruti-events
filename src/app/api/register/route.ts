@@ -23,7 +23,8 @@ export async function POST(req: Request) {
         phone,
         rollNo,
         branch,
-        eventId, // VERY IMPORTANT
+        eventId, 
+        paymentUrl: "",
       },
     });
 
