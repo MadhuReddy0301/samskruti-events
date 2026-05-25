@@ -40,6 +40,40 @@ export default function Home() {
     fetchEvents();
   }, []);
 
+  // 🔥 REGISTER FUNCTION
+  const handleRegister = async () => {
+    const name = prompt("Enter your name");
+    const email = prompt("Enter your email");
+
+    if (!name || !email) return;
+
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          rollNo: "123",
+          phone: "9999999999",
+          teamName: "Team A",
+          teamInfo: "Info",
+          paymentUrl: "test",
+        }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      alert("Registered successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Registration failed");
+    }
+  };
+
   return (
     <main style={{ padding: "20px", color: "white" }}>
       <h1 style={{ fontSize: "32px", fontWeight: "bold" }}>
@@ -71,7 +105,7 @@ export default function Home() {
 
             {/* 🔥 REGISTER BUTTON */}
             <button
-              onClick={() => alert("Register clicked")}
+              onClick={handleRegister}
               style={{
                 marginTop: "10px",
                 padding: "8px 12px",
