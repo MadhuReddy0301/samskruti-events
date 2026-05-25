@@ -33,9 +33,10 @@ model Registration {
   rollNo    String
   email     String
   phone     String
+  branch    String
   teamName  String?
   teamInfo  String?
-  paymentUrl String
+  paymentUrl String?
   status    String   @default("pending")
   eventId   String
   createdAt DateTime @default(now())
