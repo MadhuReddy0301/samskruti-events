@@ -5,34 +5,39 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const data = await req.json();
 
-    const { name, email, phone, rollNo, branch, eventId } = await req.json();
+    const { name, email, phone, rollNo, branch, eventId } = data;
 
-    if (!eventId) {
+    // Basic validation
+    if (!name || !email || !phone || !rollNo || !branch || !eventId) {
       return NextResponse.json(
-        { error: "Event ID missing" },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    const registration = await prisma.registration.create({
+    const newRegistration = await prisma.registration.create({
       data: {
         name,
         email,
         phone,
         rollNo,
         branch,
-        eventId, 
-        paymentUrl: "",
+        eventId,
+        paymentUrl: "", // important fix
       },
     });
 
-    return NextResponse.json({ success: true, registration });
-  } catch (error) {
+    return NextResponse.json({
+      message: "Registration successful",
+      data: newRegistration,
+    });
+
+  } catch (error: any) {
     console.error(error);
     return NextResponse.json(
-      { error: "Registration failed" },
+      { error: "Registration failed", details: error.message },
       { status: 500 }
     );
   }
