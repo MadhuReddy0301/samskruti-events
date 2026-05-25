@@ -22,18 +22,15 @@ export default function Home() {
     const fetchEvents = async () => {
       try {
         const res = await fetch("/api/get-events");
-
         const data = await res.json();
 
-        // ✅ SAFETY FIX (VERY IMPORTANT)
         if (Array.isArray(data)) {
           setEvents(data);
         } else {
-          console.error("Invalid data:", data);
           setEvents([]);
         }
       } catch (error) {
-        console.error("Fetch error:", error);
+        console.error(error);
         setEvents([]);
       } finally {
         setLoading(false);
@@ -62,7 +59,7 @@ export default function Home() {
             style={{
               border: "1px solid #444",
               padding: "15px",
-              marginBottom: "10px",
+              marginBottom: "15px",
               borderRadius: "8px",
             }}
           >
@@ -71,6 +68,22 @@ export default function Home() {
             <p><b>Branch:</b> {event.branch}</p>
             <p><b>Price:</b> ₹{event.price}</p>
             <p><b>Date:</b> {new Date(event.date).toLocaleDateString()}</p>
+
+            {/* 🔥 REGISTER BUTTON */}
+            <button
+              onClick={() => alert("Register clicked")}
+              style={{
+                marginTop: "10px",
+                padding: "8px 12px",
+                backgroundColor: "purple",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              Register
+            </button>
           </div>
         ))}
       </div>
