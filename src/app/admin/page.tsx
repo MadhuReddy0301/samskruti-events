@@ -5,15 +5,36 @@ import { useEffect, useState } from "react";
 export default function AdminPage() {
   const [data, setData] = useState<any[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("/api/admin");
-      const result = await res.json();
-      setData(result);
-    };
+  // Fetch registrations
+  const fetchData = async () => {
+    const res = await fetch("/api/admin");
+    const result = await res.json();
+    setData(result);
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
+
+  // Delete function
+  const handleDelete = async (id: string) => {
+    try {
+      await fetch("/api/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      alert("Deleted successfully");
+
+      // Refresh list
+      fetchData();
+    } catch (error) {
+      alert("Delete failed");
+    }
+  };
 
   return (
     <div style={{ padding: "20px", color: "white" }}>
@@ -36,6 +57,17 @@ export default function AdminPage() {
           <p>Roll No: {item.rollNo}</p>
           <p>Branch: {item.branch}</p>
           <p>Event ID: {item.eventId}</p>
+
+          <button
+            onClick={() => handleDelete(item.id)}
+            style={{
+              marginTop: "10px",
+              padding: "5px 10px",
+              cursor: "pointer",
+            }}
+          >
+            Delete
+          </button>
         </div>
       ))}
     </div>
