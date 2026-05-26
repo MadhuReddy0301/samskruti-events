@@ -24,7 +24,8 @@ model Event {
   date             DateTime
   maxParticipants  Int
   posterUrl        String
-  videoUrl         String
+  videoUrl         String?
+  createdAt         DateTime @default(now())
 }
 
 model Registration {
