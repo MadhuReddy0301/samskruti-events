@@ -7,16 +7,20 @@ export default function AdminPage() {
 
   // Fetch registrations
   const fetchData = async () => {
-    const res = await fetch("/api/admin");
-    const result = await res.json();
-    setData(result);
+    try {
+      const res = await fetch("/api/admin");
+      const result = await res.json();
+      setData(result);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Delete function
+  // Delete registration
   const handleDelete = async (id: string) => {
     try {
       await fetch("/api/delete", {
@@ -28,8 +32,6 @@ export default function AdminPage() {
       });
 
       alert("Deleted successfully");
-
-      // Refresh list
       fetchData();
     } catch (error) {
       alert("Delete failed");
@@ -37,18 +39,42 @@ export default function AdminPage() {
   };
 
   return (
-    <div style={{ padding: "20px", color: "white" }}>
-      <h1>Admin Panel</h1>
+    <div
+      style={{
+        padding: "20px",
+        background: "#0f172a",
+        minHeight: "100vh",
+        color: "white",
+      }}
+    >
+      <h1 style={{ fontSize: "28px", marginBottom: "20px" }}>
+        Admin Dashboard
+      </h1>
 
+      {/* 🔥 DASHBOARD STATS */}
+      <div
+        style={{
+          background: "#1e293b",
+          padding: "15px",
+          borderRadius: "10px",
+          marginBottom: "20px",
+        }}
+      >
+        <h2>Total Registrations: {data.length}</h2>
+      </div>
+
+      {/* 🔥 REGISTRATION LIST */}
       {data.length === 0 && <p>No registrations yet</p>}
 
       {data.map((item) => (
         <div
           key={item.id}
           style={{
-            border: "1px solid white",
-            margin: "10px 0",
-            padding: "10px",
+            background: "#1e1e2f",
+            padding: "15px",
+            borderRadius: "10px",
+            marginBottom: "15px",
+            boxShadow: "0 0 10px rgba(0,0,0,0.5)",
           }}
         >
           <h3>{item.name}</h3>
@@ -62,7 +88,11 @@ export default function AdminPage() {
             onClick={() => handleDelete(item.id)}
             style={{
               marginTop: "10px",
-              padding: "5px 10px",
+              padding: "8px 12px",
+              backgroundColor: "red",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
               cursor: "pointer",
             }}
           >

@@ -4,17 +4,16 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const registrations = await prisma.registration.findMany({
+    const data = await prisma.registration.findMany({
       orderBy: {
         id: "desc",
       },
     });
 
-    return Response.json(registrations);
+    return Response.json(data);
   } catch (error) {
-    console.error(error);
     return Response.json(
-      { error: "Failed to fetch registrations" },
+      { error: "Failed to fetch" },
       { status: 500 }
     );
   }
