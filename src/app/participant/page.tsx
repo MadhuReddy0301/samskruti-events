@@ -1,129 +1,127 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const events = [
+  {
+    id: "1",
+    title: "Coding Hub",
+    desc: "DSA Competition",
+    price: "₹100",
+    branch: "CSE",
+    image:
+      "https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2",
+  },
+  {
+    id: "2",
+    title: "Treasure Hunt",
+    desc: "Find Treasure",
+    price: "₹150",
+    branch: "ECE",
+    image:
+      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
+  },
+];
 
 export default function ParticipantPage() {
-  const [events, setEvents] = useState<any[]>([]);
-  const router = useRouter();
-
-  useEffect(() => {
-    fetch("/api/get-events")
-      .then((res) => res.json())
-      .then((data) => setEvents(data));
-  }, []);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-[#0f172a] to-[#020617] text-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#0f172a] to-black text-white p-10 relative overflow-hidden">
 
-      {/* HEADER */}
-      <div className="mb-10">
-        <p className="text-purple-400 text-sm mb-2">
-          DISCOVER & JOIN
-        </p>
-
-        <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
-          Explore Events
-        </h1>
-
-        <p className="text-gray-400 mt-3">
-          Find exciting events happening in your campus. Learn, compete and grow!
-        </p>
-      </div>
+      {/* TITLE */}
+      <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+        Explore Events
+      </h1>
 
       {/* EVENTS */}
-      <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-
+      <div className="grid md:grid-cols-2 gap-8">
         {events.map((event) => (
           <div
             key={event.id}
-            className="relative bg-gradient-to-br from-[#0f172a] to-[#020617] rounded-2xl overflow-hidden border border-slate-700 shadow-xl hover:shadow-purple-500/20 transition duration-300"
+            className="bg-[#111827] rounded-2xl overflow-hidden shadow-xl hover:scale-105 transition"
           >
+            <img src={event.image} className="h-48 w-full object-cover" />
 
-            {/* IMAGE */}
-            <div className="h-44 bg-[url('https://images.unsplash.com/photo-1516455207990-7a41ce80f7ee')] bg-cover bg-center"></div>
-
-            {/* CONTENT */}
             <div className="p-6">
+              <h2 className="text-2xl font-bold">{event.title}</h2>
+              <p className="text-gray-400">{event.desc}</p>
 
-              {/* BADGES */}
-              <div className="flex justify-between mb-3">
-                <span className="bg-purple-600/20 text-purple-400 px-3 py-1 rounded-full text-xs">
-                  {event.branch}
-                </span>
-
-                <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-xs">
-                  Competition
-                </span>
+              <div className="text-gray-300 mt-2">
+                💰 {event.price} | 🎓 {event.branch}
               </div>
 
-              {/* TITLE */}
-              <h2 className="text-xl font-semibold mb-1">
-                {event.title}
-              </h2>
-
-              <p className="text-gray-400 mb-4">
-                {event.description}
-              </p>
-
-              {/* DETAILS */}
-              <div className="space-y-2 text-sm text-gray-300">
-                <p>💰 ₹{event.price} Entry Fee</p>
-                <p>📅 Sep 09 2026</p>
-                <p>👥 Max: 3 Participants</p>
-              </div>
-
-              {/* BUTTON */}
+              {/* ✅ FIXED BUTTON */}
               <button
-                onClick={() => router.push(`/events/${event.id}`)}
-                className="mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-500 py-3 rounded-lg hover:scale-[1.02] transition"
+                onClick={() => setSelectedEvent(event)}
+                className="mt-4 w-full bg-gradient-to-r from-purple-500 to-blue-500 py-2 rounded-lg"
               >
                 View Event →
               </button>
-
             </div>
           </div>
         ))}
-
       </div>
 
-      {/* FEATURES */}
-      <div className="mt-16 grid md:grid-cols-4 gap-6">
+      {/* 🔥 SLIDE PANEL */}
+      <AnimatePresence>
+        {selectedEvent && (
+          <>
+            {/* BACKDROP */}
+            <motion.div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedEvent(null)}
+            />
 
-        <div className="bg-slate-800/50 p-5 rounded-xl text-center">
-          <p className="text-purple-400 mb-2">🏆</p>
-          <h3 className="font-semibold">Exciting Competitions</h3>
-          <p className="text-sm text-gray-400">
-            Participate in technical and non-technical events
-          </p>
-        </div>
+            {/* PANEL */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.4 }}
+              className="fixed top-0 right-0 h-full w-full md:w-[450px] bg-[#020617] border-l border-gray-700 shadow-2xl z-50 p-6"
+            >
+              {/* CLOSE */}
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="text-gray-400 hover:text-white mb-4"
+              >
+                ✖ Close
+              </button>
 
-        <div className="bg-slate-800/50 p-5 rounded-xl text-center">
-          <p className="text-blue-400 mb-2">👥</p>
-          <h3 className="font-semibold">Learn & Network</h3>
-          <p className="text-sm text-gray-400">
-            Connect with peers and experts
-          </p>
-        </div>
+              {/* IMAGE */}
+              <img
+                src={selectedEvent.image}
+                className="rounded-xl mb-4 h-48 w-full object-cover"
+              />
 
-        <div className="bg-slate-800/50 p-5 rounded-xl text-center">
-          <p className="text-green-400 mb-2">🏅</p>
-          <h3 className="font-semibold">Win Rewards</h3>
-          <p className="text-sm text-gray-400">
-            Show skills and earn prizes
-          </p>
-        </div>
+              <h2 className="text-2xl font-bold">
+                {selectedEvent.title}
+              </h2>
+              <p className="text-gray-400 mb-4">
+                {selectedEvent.desc}
+              </p>
 
-        <div className="bg-slate-800/50 p-5 rounded-xl text-center">
-          <p className="text-orange-400 mb-2">🚀</p>
-          <h3 className="font-semibold">Build Future</h3>
-          <p className="text-sm text-gray-400">
-            Improve resume & opportunities
-          </p>
-        </div>
+              {/* FORM */}
+              <form className="space-y-3">
+                <input className="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Name" />
+                <input className="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Email" />
+                <input className="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Phone" />
+                <input className="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Roll No" />
+                <input className="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Branch" />
 
-      </div>
-
+                <button className="w-full bg-gradient-to-r from-purple-500 to-blue-500 py-3 rounded-lg mt-3 hover:opacity-90 transition">
+                  Register →
+                </button>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
