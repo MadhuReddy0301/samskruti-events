@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [events, setEvents] = useState([]);
-  const [selectedEventId, setSelectedEventId] = useState("");
+  const [events, setEvents] = useState<any[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<string>("");
 
   const [form, setForm] = useState({
     name: "",
@@ -21,8 +21,8 @@ export default function Home() {
   }, []);
 
   const handleRegister = async () => {
-    if (!selectedEventId) {
-      alert("Please select an event first");
+    if (!selectedEvent) {
+      alert("Please select an event");
       return;
     }
 
@@ -33,7 +33,7 @@ export default function Home() {
       },
       body: JSON.stringify({
         ...form,
-        eventId: selectedEventId,
+        eventId: selectedEvent,
       }),
     });
 
@@ -43,42 +43,79 @@ export default function Home() {
       alert("Registration successful");
     } else {
       alert("Registration failed");
-      console.log(data);
     }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Samskruti Events</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-black text-white p-6">
 
-      {events.map((event: any) => (
-        <div key={event.id} style={{ border: "1px solid white", margin: "10px", padding: "10px" }}>
-          <h3>{event.title}</h3>
-          <p>{event.description}</p>
-          <p>Branch: {event.branch}</p>
-          <p>Price: ₹{event.price}</p>
-          <p>Date: {new Date(event.date).toLocaleDateString()}</p>
+      <h1 className="text-3xl font-bold mb-6">🎉 Samskruti Events</h1>
 
-          <button
-            onClick={() => {
-              setSelectedEventId(event.id);
-              alert("Event selected: " + event.title);
-            }}
+      {/* EVENTS */}
+      <div className="grid md:grid-cols-2 gap-4 mb-8">
+        {events.map((event) => (
+          <div
+            key={event.id}
+            className={`p-4 rounded-xl shadow-lg cursor-pointer transition ${
+              selectedEvent === event.id
+                ? "bg-blue-600"
+                : "bg-slate-800 hover:bg-slate-700"
+            }`}
+            onClick={() => setSelectedEvent(event.id)}
           >
-            Select Event
-          </button>
-        </div>
-      ))}
+            <h2 className="text-lg font-bold">{event.title}</h2>
+            <p>{event.description}</p>
+            <p className="text-sm text-gray-300">
+              Branch: {event.branch}
+            </p>
+            <p className="text-sm text-gray-300">
+              Price: ₹{event.price}
+            </p>
+          </div>
+        ))}
+      </div>
 
-      <h2>Register</h2>
+      {/* FORM */}
+      <div className="bg-slate-800 p-6 rounded-xl shadow-lg max-w-md">
+        <h2 className="text-xl font-semibold mb-4">Register</h2>
 
-      <input placeholder="Name" onChange={(e) => setForm({ ...form, name: e.target.value })} /><br />
-      <input placeholder="Email" onChange={(e) => setForm({ ...form, email: e.target.value })} /><br />
-      <input placeholder="Phone" onChange={(e) => setForm({ ...form, phone: e.target.value })} /><br />
-      <input placeholder="Roll No" onChange={(e) => setForm({ ...form, rollNo: e.target.value })} /><br />
-      <input placeholder="Branch" onChange={(e) => setForm({ ...form, branch: e.target.value })} /><br />
+        <input
+          placeholder="Name"
+          className="w-full mb-3 p-2 rounded bg-slate-700"
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
 
-      <button onClick={handleRegister}>Register</button>
+        <input
+          placeholder="Email"
+          className="w-full mb-3 p-2 rounded bg-slate-700"
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
+
+        <input
+          placeholder="Phone"
+          className="w-full mb-3 p-2 rounded bg-slate-700"
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+        />
+
+        <input
+          placeholder="Roll No"
+          className="w-full mb-3 p-2 rounded bg-slate-700"
+          onChange={(e) => setForm({ ...form, rollNo: e.target.value })}
+        />
+
+        <input
+          placeholder="Branch"
+          className="w-full mb-3 p-2 rounded bg-slate-700"
+          onChange={(e) => setForm({ ...form, branch: e.target.value })}
+        />
+
+        <button
+          onClick={handleRegister}
+          className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded w-full"
+        >
+          Register
+        </button>
+      </div>
     </div>
   );
 }
