@@ -32,7 +32,7 @@ export default function ParticipantPage() {
       </div>
 
       {/* EVENTS */}
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
 
         {events.map((event) => (
           <div
@@ -41,7 +41,7 @@ export default function ParticipantPage() {
           >
 
             {/* IMAGE */}
-            <div className="h-56 bg-[url('https://images.unsplash.com/photo-1516455207990-7a41ce80f7ee')] bg-cover bg-center"></div>
+            <div className="h-44 bg-[url('https://images.unsplash.com/photo-1516455207990-7a41ce80f7ee')] bg-cover bg-center"></div>
 
             {/* CONTENT */}
             <div className="p-6">
@@ -58,7 +58,7 @@ export default function ParticipantPage() {
               </div>
 
               {/* TITLE */}
-              <h2 className="text-2xl font-semibold mb-1">
+              <h2 className="text-xl font-semibold mb-1">
                 {event.title}
               </h2>
 
@@ -76,7 +76,7 @@ export default function ParticipantPage() {
               {/* BUTTON */}
               <button
                 onClick={() => router.push(`/events/${event.id}`)}
-                className="mt-6 w-full bg-gradient-to-r from-purple-600 to-blue-500 py-3 rounded-lg hover:scale-[1.02] transition"
+                className="mt-4 w-full bg-gradient-to-r from-purple-600 to-blue-500 py-3 rounded-lg hover:scale-[1.02] transition"
               >
                 View Event →
               </button>
