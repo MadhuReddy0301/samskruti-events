@@ -1,61 +1,62 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-
-const events = [
-  {
-    id: "1",
-    title: "Coding Hub",
-    desc: "DSA Competition",
-    price: "₹100",
-    branch: "CSE",
-    image:
-      "https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2",
-  },
-  {
-    id: "2",
-    title: "Treasure Hunt",
-    desc: "Find Treasure",
-    price: "₹150",
-    branch: "ECE",
-    image:
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
-  },
-];
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ParticipantPage() {
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const router = useRouter();
+
+  const [events, setEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/get-events")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("EVENTS:", data);
+        setEvents(data);
+      });
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#0f172a] to-black text-white p-10 relative overflow-hidden">
-
-      {/* TITLE */}
-      <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] to-[#1e3a8a] text-white p-10">
+      
+      {/* HEADER */}
+      <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
         Explore Events
       </h1>
 
-      {/* EVENTS */}
+      <p className="text-gray-400 mb-10">
+        Find exciting events happening in your campus. Learn, compete and grow!
+      </p>
+
+      {/* EVENTS GRID */}
       <div className="grid md:grid-cols-2 gap-8">
         {events.map((event) => (
           <div
             key={event.id}
-            className="bg-[#111827] rounded-2xl overflow-hidden shadow-xl hover:scale-105 transition"
+            className="bg-slate-900/60 backdrop-blur-xl rounded-2xl overflow-hidden border border-white/10 hover:scale-105 transition duration-300"
           >
-            <img src={event.image} className="h-48 w-full object-cover" />
+            {/* IMAGE */}
+            <img
+              src="https://images.unsplash.com/photo-1503428593586-e225b39bddfe"
+              className="w-full h-56 object-cover"
+            />
 
+            {/* CONTENT */}
             <div className="p-6">
-              <h2 className="text-2xl font-bold">{event.title}</h2>
-              <p className="text-gray-400">{event.desc}</p>
+              <h2 className="text-2xl font-semibold">{event.title || event.name}</h2>
+              <p className="text-gray-400 mb-4">
+                {event.description || "Exciting event"}
+              </p>
 
-              <div className="text-gray-300 mt-2">
-                💰 {event.price} | 🎓 {event.branch}
-              </div>
+              <p>💰 ₹{event.price || 100}</p>
+              <p>📅 {event.date || "Coming Soon"}</p>
+              <p>👥 Max Participants: {event.maxParticipants || 3}</p>
 
-              {/* ✅ FIXED BUTTON */}
+              {/* BUTTON */}
               <button
-                onClick={() => setSelectedEvent(event)}
-                className="mt-4 w-full bg-gradient-to-r from-purple-500 to-blue-500 py-2 rounded-lg"
+                onClick={() => router.push(`/events/${event.id}`)}
+                className="mt-5 w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-500 hover:opacity-90 transition"
               >
                 View Event →
               </button>
@@ -64,64 +65,12 @@ export default function ParticipantPage() {
         ))}
       </div>
 
-      {/* 🔥 SLIDE PANEL */}
-      <AnimatePresence>
-        {selectedEvent && (
-          <>
-            {/* BACKDROP */}
-            <motion.div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedEvent(null)}
-            />
-
-            {/* PANEL */}
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.4 }}
-              className="fixed top-0 right-0 h-full w-full md:w-[450px] bg-[#020617] border-l border-gray-700 shadow-2xl z-50 p-6"
-            >
-              {/* CLOSE */}
-              <button
-                onClick={() => setSelectedEvent(null)}
-                className="text-gray-400 hover:text-white mb-4"
-              >
-                ✖ Close
-              </button>
-
-              {/* IMAGE */}
-              <img
-                src={selectedEvent.image}
-                className="rounded-xl mb-4 h-48 w-full object-cover"
-              />
-
-              <h2 className="text-2xl font-bold">
-                {selectedEvent.title}
-              </h2>
-              <p className="text-gray-400 mb-4">
-                {selectedEvent.desc}
-              </p>
-
-              {/* FORM */}
-              <form className="space-y-3">
-                <input className="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Name" />
-                <input className="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Email" />
-                <input className="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Phone" />
-                <input className="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Roll No" />
-                <input className="w-full p-3 rounded bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Branch" />
-
-                <button className="w-full bg-gradient-to-r from-purple-500 to-blue-500 py-3 rounded-lg mt-3 hover:opacity-90 transition">
-                  Register →
-                </button>
-              </form>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* NO EVENTS */}
+      {events.length === 0 && (
+        <p className="text-center text-gray-400 mt-20">
+          No events found...
+        </p>
+      )}
     </div>
   );
 }
