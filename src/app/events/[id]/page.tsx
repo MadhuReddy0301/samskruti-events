@@ -1,82 +1,78 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
+const events: any = {
+  "1": {
+    title: "Coding Hub",
+    desc: "DSA Competition",
+    price: "₹100",
+    branch: "CSE",
+    image:
+      "https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2",
+  },
+  "2": {
+    title: "Treasure Hunt",
+    desc: "Find Treasure",
+    price: "₹150",
+    branch: "ECE",
+    image:
+      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
+  },
+};
+
 export default function EventPage() {
-  const { id } = useParams();
-  const [event, setEvent] = useState<any>(null);
+  const params = useParams();
+  const event = events[params.id as string];
 
-  useEffect(() => {
-    fetch("/api/get-events")
-      .then((res) => res.json())
-      .then((data) => {
-        const found = data.find((e: any) => e.id === id);
-        setEvent(found);
-      });
-  }, [id]);
-
-  if (!event) return <p className="text-white p-10">Loading...</p>;
+  if (!event) return <div className="text-white">Event not found</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-[#0f172a] to-[#020617] text-white p-6 flex justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#0f172a] to-black text-white flex items-center justify-center p-10">
+      
+      <div className="grid md:grid-cols-2 gap-10 w-full max-w-6xl">
 
-      <div className="max-w-5xl w-full grid md:grid-cols-2 gap-10">
+        {/* 🔥 LEFT SIDE (EVENT CARD) */}
+        <div className="bg-[#111827]/70 backdrop-blur-lg border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+          
+          <img
+            src={event.image}
+            className="w-full h-64 object-cover"
+          />
 
-        {/* LEFT SIDE IMAGE */}
-        <div className="rounded-2xl overflow-hidden shadow-lg">
-          <div className="h-[350px] bg-[url('https://images.unsplash.com/photo-1516455207990-7a41ce80f7ee')] bg-cover bg-center"></div>
-        </div>
+          <div className="p-6 space-y-3">
+            <h1 className="text-3xl font-bold">{event.title}</h1>
+            <p className="text-gray-400">{event.desc}</p>
 
-        {/* RIGHT SIDE DETAILS */}
-        <div className="flex flex-col justify-center">
-
-          <span className="text-purple-400 mb-2">{event.branch}</span>
-
-          <h1 className="text-4xl font-bold mb-3">
-            {event.title}
-          </h1>
-
-          <p className="text-gray-400 mb-6">
-            {event.description}
-          </p>
-
-          {/* DETAILS */}
-          <div className="space-y-3 text-gray-300">
-            <p>💰 ₹{event.price}</p>
-            <p>📅 Sep 09 2026</p>
-            <p>👥 Max 3 Participants</p>
+            <div className="text-gray-300 space-y-1 mt-3">
+              <p>💰 {event.price}</p>
+              <p>🎓 {event.branch}</p>
+              <p>📅 Sep 09 2026</p>
+            </div>
           </div>
-
         </div>
 
-      </div>
+        {/* 🔥 RIGHT SIDE (FORM) */}
+        <div className="bg-[#111827]/70 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-2xl p-8 flex flex-col justify-center">
+          
+          <h2 className="text-2xl font-bold mb-6 text-center">
+            Register Now ✨
+          </h2>
 
-      {/* REGISTER FORM */}
-      <div className="absolute bottom-10 w-full flex justify-center">
+          <form className="space-y-4">
+            <input className="w-full p-3 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Name" />
+            <input className="w-full p-3 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Email" />
+            <input className="w-full p-3 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Phone" />
+            <input className="w-full p-3 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Roll No" />
+            <input className="w-full p-3 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Branch" />
 
-        <div className="bg-slate-800/80 backdrop-blur-lg p-6 rounded-xl shadow-xl w-[350px]">
-
-          <h2 className="text-xl font-semibold mb-4">Register</h2>
-
-          <form className="space-y-3">
-
-            <input placeholder="Name" className="w-full p-2 rounded bg-slate-700 outline-none" />
-            <input placeholder="Email" className="w-full p-2 rounded bg-slate-700 outline-none" />
-            <input placeholder="Phone" className="w-full p-2 rounded bg-slate-700 outline-none" />
-            <input placeholder="Roll No" className="w-full p-2 rounded bg-slate-700 outline-none" />
-            <input placeholder="Branch" className="w-full p-2 rounded bg-slate-700 outline-none" />
-
-            <button className="w-full bg-gradient-to-r from-purple-600 to-blue-500 py-2 rounded mt-2">
-              Register
+            <button className="w-full py-3 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 hover:opacity-90 transition">
+              Register →
             </button>
-
           </form>
-
         </div>
 
       </div>
-
     </div>
   );
 }
