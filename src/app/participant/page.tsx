@@ -14,44 +14,116 @@ export default function ParticipantPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-slate-800 text-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-black via-[#0f172a] to-[#020617] text-white p-6">
 
       {/* HEADER */}
-      <h1 className="text-3xl font-bold mb-2">Explore Events</h1>
-      <p className="text-gray-400 mb-6">
-        Discover and register for exciting events
-      </p>
+      <div className="mb-10">
+        <p className="text-purple-400 text-sm mb-2">
+          DISCOVER & JOIN
+        </p>
 
-      {/* EVENTS GRID */}
-      <div className="grid md:grid-cols-2 gap-6">
+        <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
+          Explore Events
+        </h1>
+
+        <p className="text-gray-400 mt-3">
+          Find exciting events happening in your campus. Learn, compete and grow!
+        </p>
+      </div>
+
+      {/* EVENTS */}
+      <div className="grid md:grid-cols-2 gap-8">
+
         {events.map((event) => (
           <div
             key={event.id}
-            className="bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:scale-[1.02] transition"
+            className="relative bg-gradient-to-br from-[#0f172a] to-[#020617] rounded-2xl overflow-hidden border border-slate-700 shadow-xl hover:shadow-purple-500/20 transition duration-300"
           >
-            {/* IMAGE (dummy) */}
-            <div className="h-40 bg-gradient-to-r from-purple-600 to-blue-500"></div>
+
+            {/* IMAGE */}
+            <div className="h-56 bg-[url('https://images.unsplash.com/photo-1516455207990-7a41ce80f7ee')] bg-cover bg-center"></div>
 
             {/* CONTENT */}
-            <div className="p-4">
-              <h2 className="text-xl font-semibold">{event.title}</h2>
-              <p className="text-gray-400">{event.description}</p>
+            <div className="p-6">
 
-              <div className="mt-3 text-sm text-gray-300">
-                <p>💰 ₹{event.price}</p>
-                <p>🏫 {event.branch}</p>
+              {/* BADGES */}
+              <div className="flex justify-between mb-3">
+                <span className="bg-purple-600/20 text-purple-400 px-3 py-1 rounded-full text-xs">
+                  {event.branch}
+                </span>
+
+                <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-xs">
+                  Competition
+                </span>
               </div>
 
+              {/* TITLE */}
+              <h2 className="text-2xl font-semibold mb-1">
+                {event.title}
+              </h2>
+
+              <p className="text-gray-400 mb-4">
+                {event.description}
+              </p>
+
+              {/* DETAILS */}
+              <div className="space-y-2 text-sm text-gray-300">
+                <p>💰 ₹{event.price} Entry Fee</p>
+                <p>📅 Sep 09 2026</p>
+                <p>👥 Max: 3 Participants</p>
+              </div>
+
+              {/* BUTTON */}
               <button
                 onClick={() => router.push(`/events/${event.id}`)}
-                className="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded w-full"
+                className="mt-6 w-full bg-gradient-to-r from-purple-600 to-blue-500 py-3 rounded-lg hover:scale-[1.02] transition"
               >
                 View Event →
               </button>
+
             </div>
           </div>
         ))}
+
       </div>
+
+      {/* FEATURES */}
+      <div className="mt-16 grid md:grid-cols-4 gap-6">
+
+        <div className="bg-slate-800/50 p-5 rounded-xl text-center">
+          <p className="text-purple-400 mb-2">🏆</p>
+          <h3 className="font-semibold">Exciting Competitions</h3>
+          <p className="text-sm text-gray-400">
+            Participate in technical and non-technical events
+          </p>
+        </div>
+
+        <div className="bg-slate-800/50 p-5 rounded-xl text-center">
+          <p className="text-blue-400 mb-2">👥</p>
+          <h3 className="font-semibold">Learn & Network</h3>
+          <p className="text-sm text-gray-400">
+            Connect with peers and experts
+          </p>
+        </div>
+
+        <div className="bg-slate-800/50 p-5 rounded-xl text-center">
+          <p className="text-green-400 mb-2">🏅</p>
+          <h3 className="font-semibold">Win Rewards</h3>
+          <p className="text-sm text-gray-400">
+            Show skills and earn prizes
+          </p>
+        </div>
+
+        <div className="bg-slate-800/50 p-5 rounded-xl text-center">
+          <p className="text-orange-400 mb-2">🚀</p>
+          <h3 className="font-semibold">Build Future</h3>
+          <p className="text-sm text-gray-400">
+            Improve resume & opportunities
+          </p>
+        </div>
+
+      </div>
+
     </div>
   );
 }
