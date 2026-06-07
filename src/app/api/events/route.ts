@@ -1,19 +1,21 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
 
-// GET EVENTS
+// ✅ GET EVENTS
 export async function GET() {
-  const events = await prisma.event.findMany();
-  console.log("GET EVENTS:", events);
-  return NextResponse.json(events);
+  try {
+    const events = await prisma.event.findMany()
+    return NextResponse.json(events || [])
+  } catch (error) {
+    console.error("GET ERROR:", error)
+    return NextResponse.json([], { status: 200 })
+  }
 }
 
-// CREATE EVENT
+// ✅ CREATE EVENT
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-
-    console.log("BODY:", body);
+    const body = await req.json()
 
     const event = await prisma.event.create({
       data: {
@@ -21,22 +23,16 @@ export async function POST(req: Request) {
         description: String(body.description),
         branch: String(body.branch),
         price: Number(body.price),
-        date: new Date(body.date || Date.now()),
+        date: body.date ? new Date(body.date) : new Date(),
         maxParticipants: Number(body.maxParticipants || 0),
-        posterUrl: "",
+        posterUrl: body.posterUrl || "",
         videoUrl: body.videoUrl || null,
       },
-    });
+    })
 
-    console.log("EVENT CREATED:", event);
-
-    return NextResponse.json(event);
-  } catch (error: any) {
-    console.log("ERROR FULL:", error);
-
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json(event)
+  } catch (error) {
+    console.error("POST ERROR:", error)
+    return NextResponse.json({ error: "Failed" }, { status: 500 })
   }
 }

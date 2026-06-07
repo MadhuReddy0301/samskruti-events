@@ -11,9 +11,9 @@ export default function ParticipantPage() {
 
   // FETCH EVENTS
   useEffect(() => {
-    fetch("/api/get-events")
+    fetch("/api/events")
       .then((res) => res.json())
-      .then((data) => setEvents(data));
+      .then((data) => setEvents(Array.isArray(data)?data:[]));
   }, []);
 
   // REGISTER FUNCTION
