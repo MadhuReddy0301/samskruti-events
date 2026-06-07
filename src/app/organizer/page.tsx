@@ -5,18 +5,18 @@ import { useEffect, useState } from "react"
 export default function OrganizerPage() {
   const [events, setEvents] = useState<any[]>([])
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<any>({
     title: "",
     description: "",
     branch: "",
     price: "",
     date: "",
     maxParticipants: "",
-    posterUrl: "",
     videoUrl: "",
+    poster: null,
   })
 
-  // ✅ FETCH EVENTS
+  // FETCH EVENTS
   useEffect(() => {
     fetch("/api/events")
       .then((res) => res.json())
@@ -25,111 +25,96 @@ export default function OrganizerPage() {
       })
   }, [])
 
-  // ✅ HANDLE INPUT
+  // HANDLE INPUT
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  // ✅ CREATE EVENT
+  // HANDLE FILE
+  const handleFile = (e: any) => {
+    setForm({ ...form, poster: e.target.files[0] })
+  }
+
+  // SUBMIT
   const handleSubmit = async (e: any) => {
     e.preventDefault()
 
+    const formData = new FormData()
+
+    Object.keys(form).forEach((key) => {
+      formData.append(key, form[key])
+    })
+
     const res = await fetch("/api/events", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: formData,
     })
 
     const newEvent = await res.json()
 
-    // update UI instantly
     setEvents((prev) => [newEvent, ...prev])
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-[#0f172a] to-black text-white p-10">
+    <div className="min-h-screen bg-black text-white p-10">
 
-      <h1 className="text-3xl font-bold mb-8">Organizer Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-6">Organizer Dashboard</h1>
 
-      <div className="flex gap-10 items-start">
+      <div className="flex gap-10">
 
-        {/* ================= FORM ================= */}
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-md bg-white/5 backdrop-blur-lg p-6 rounded-xl border border-white/10 shadow-lg"
-        >
-          <h2 className="text-xl font-semibold mb-4">Create Event</h2>
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="w-1/3 space-y-3">
 
-          {[
-            { name: "title", placeholder: "Title" },
-            { name: "description", placeholder: "Description" },
-            { name: "branch", placeholder: "Branch (CSE/ECE)" },
-            { name: "price", placeholder: "Price" },
-            { name: "date", placeholder: "Date (yyyy-mm-dd)" },
-            { name: "maxParticipants", placeholder: "Max Participants" },
-            { name: "posterUrl", placeholder: "Poster Image URL" },
-            { name: "videoUrl", placeholder: "Video URL" },
-          ].map((field) => (
-            <input
-              key={field.name}
-              name={field.name}
-              placeholder={field.placeholder}
-              value={(form as any)[field.name]}
-              onChange={handleChange}
-              className="w-full mb-3 p-2 rounded bg-white/10 border border-white/10 outline-none focus:ring-2 focus:ring-purple-500"
-            />
-          ))}
+          <input name="title" placeholder="Title" onChange={handleChange} className="input" />
+          <input name="description" placeholder="Description" onChange={handleChange} className="input" />
+          <input name="branch" placeholder="Branch" onChange={handleChange} className="input" />
+          <input name="price" placeholder="Price" onChange={handleChange} className="input" />
+          <input type="date" name="date" onChange={handleChange} className="input" />
+          <input name="maxParticipants" placeholder="Max Participants" onChange={handleChange} className="input" />
+          <input name="videoUrl" placeholder="Video URL" onChange={handleChange} className="input" />
 
-          <button
-            type="submit"
-            className="w-full mt-3 bg-gradient-to-r from-purple-500 to-blue-500 py-2 rounded-lg font-semibold hover:opacity-90 transition"
-          >
+          {/* FILE INPUT */}
+          <input type="file" accept="image/*" onChange={handleFile} className="input" />
+
+          <button className="bg-purple-600 px-4 py-2 rounded w-full">
             Create Event
           </button>
+
         </form>
 
-        {/* ================= EVENTS GRID ================= */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
-
-          {events.length === 0 && (
-            <p className="text-gray-400">No events yet...</p>
-          )}
+        {/* EVENTS */}
+        <div className="grid grid-cols-2 gap-6 w-2/3">
 
           {events.map((event) => (
-            <div
-              key={event.id}
-              className="bg-white/5 backdrop-blur-lg rounded-xl overflow-hidden shadow-lg hover:shadow-purple-500/30 transition-all duration-300 border border-white/10"
-            >
-              {/* IMAGE */}
-              <div className="h-32 w-full overflow-hidden">
-                <img
-                  src={event.posterUrl || "https://picsum.photos/400/200"}
-                  alt="event"
-                  className="w-full h-full object-cover"
-                />
+            <div key={event.id} className="bg-white/10 rounded-lg overflow-hidden">
+
+              <img
+                src={event.posterUrl || "https://picsum.photos/300"}
+                className="h-32 w-full object-cover"
+              />
+
+              <div className="p-3">
+                <h2>{event.title}</h2>
+                <p className="text-sm text-gray-400">{event.description}</p>
               </div>
 
-              {/* CONTENT */}
-              <div className="p-4">
-                <h2 className="text-lg font-semibold text-white">
-                  {event.title}
-                </h2>
-
-                <p className="text-sm text-gray-400 mt-1">
-                  {event.description}
-                </p>
-
-                <div className="flex justify-between mt-3 text-sm text-gray-300">
-                  <span>₹ {event.price}</span>
-                  <span>{event.branch}</span>
-                </div>
-              </div>
             </div>
           ))}
 
         </div>
 
       </div>
+
+      <style jsx>{`
+        .input {
+          width: 100%;
+          padding: 8px;
+          border-radius: 8px;
+          background: rgba(255,255,255,0.1);
+          border: 1px solid rgba(255,255,255,0.2);
+        }
+      `}</style>
+
     </div>
   )
 }
