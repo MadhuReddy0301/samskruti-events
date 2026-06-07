@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import fs from "fs"
-import path from "path"
+import { createClient } from "@supabase/supabase-js"
+
+// SUPABASE CLIENT
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 // GET EVENTS
 export async function GET() {
-  try {
-    const events = await prisma.event.findMany({
-      orderBy: { createdAt: "desc" },
-    })
-    return NextResponse.json(events || [])
-  } catch (error) {
-    console.error(error)
-    return NextResponse.json([], { status: 200 })
-  }
+  const events = await prisma.event.findMany({
+    orderBy: { createdAt: "desc" },
+  })
+  return NextResponse.json(events)
 }
 
 // CREATE EVENT WITH IMAGE
@@ -34,15 +34,20 @@ export async function POST(req: Request) {
     let posterUrl = ""
 
     if (file) {
-      const bytes = await file.arrayBuffer()
-      const buffer = Buffer.from(bytes)
+      const fileExt = file.name.split(".").pop()
+      const fileName = `${Date.now()}.${fileExt}`
 
-      const fileName = Date.now() + "-" + file.name
-      const uploadPath = path.join(process.cwd(), "public/uploads", fileName)
+      const { error } = await supabase.storage
+        .from("event-posters")
+        .upload(fileName, file)
 
-      fs.writeFileSync(uploadPath, buffer)
+      if (error) throw error
 
-      posterUrl = `/uploads/${fileName}`
+      const { data } = supabase.storage
+        .from("event-posters")
+        .getPublicUrl(fileName)
+
+      posterUrl = data.publicUrl
     }
 
     const event = await prisma.event.create({
@@ -60,7 +65,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(event)
   } catch (error) {
-    console.error("UPLOAD ERROR:", error)
+    console.log(error)
     return NextResponse.json({ error: "Failed" }, { status: 500 })
   }
 }
