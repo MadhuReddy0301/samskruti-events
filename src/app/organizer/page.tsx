@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
 export default function OrganizerPage() {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<any[]>([])
 
   const [form, setForm] = useState({
     title: "",
@@ -14,131 +14,122 @@ export default function OrganizerPage() {
     maxParticipants: "",
     posterUrl: "",
     videoUrl: "",
-  });
+  })
 
-  // FETCH EVENTS
-  const loadEvents = async () => {
-    const res = await fetch("/api/events");
-    const data = await res.json();
-    setEvents(data);
-  };
-
+  // ✅ FETCH EVENTS
   useEffect(() => {
-    loadEvents();
-  }, []);
+    fetch("/api/events")
+      .then((res) => res.json())
+      .then((data) => {
+        setEvents(Array.isArray(data) ? data : [])
+      })
+  }, [])
 
-  // HANDLE INPUT
+  // ✅ HANDLE INPUT
   const handleChange = (e: any) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
 
-  // SUBMIT
+  // ✅ CREATE EVENT
   const handleSubmit = async (e: any) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const res = await fetch("/api/create-event", {
+    const res = await fetch("/api/events", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
-    });
+    })
 
-    const data = await res.json();
+    const newEvent = await res.json()
 
-    if (data.success) {
-      alert("Event Created ✅");
-      setForm({
-        title: "",
-        description: "",
-        branch: "",
-        price: "",
-        date: "",
-        maxParticipants: "",
-        posterUrl: "",
-        videoUrl: "",
-      });
-      loadEvents();
-    } else {
-      alert("Error ❌");
-    }
-  };
+    // update UI instantly
+    setEvents((prev) => [newEvent, ...prev])
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black text-white p-10">
+    <div className="min-h-screen bg-gradient-to-br from-black via-[#0f172a] to-black text-white p-10">
 
-      <h1 className="text-4xl font-bold mb-10">Organizer Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-8">Organizer Dashboard</h1>
 
-      <div className="grid md:grid-cols-2 gap-10">
+      <div className="flex gap-10 items-start">
 
-        {/* LEFT FORM */}
+        {/* ================= FORM ================= */}
         <form
           onSubmit={handleSubmit}
-          className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 space-y-4"
+          className="w-full max-w-md bg-white/5 backdrop-blur-lg p-6 rounded-xl border border-white/10 shadow-lg"
         >
-          <h2 className="text-xl font-semibold">Create Event</h2>
+          <h2 className="text-xl font-semibold mb-4">Create Event</h2>
 
-          <input name="title" value={form.title} onChange={handleChange} placeholder="Title" className="input" />
-          <input name="description" value={form.description} onChange={handleChange} placeholder="Description" className="input" />
-          <input name="branch" value={form.branch} onChange={handleChange} placeholder="Branch" className="input" />
-          <input name="price" value={form.price} onChange={handleChange} placeholder="Price" className="input" />
-          <input type="date" name="date" value={form.date} onChange={handleChange} className="input" />
-          <input name="maxParticipants" value={form.maxParticipants} onChange={handleChange} placeholder="Max Participants" className="input" />
+          {[
+            { name: "title", placeholder: "Title" },
+            { name: "description", placeholder: "Description" },
+            { name: "branch", placeholder: "Branch (CSE/ECE)" },
+            { name: "price", placeholder: "Price" },
+            { name: "date", placeholder: "Date (yyyy-mm-dd)" },
+            { name: "maxParticipants", placeholder: "Max Participants" },
+            { name: "posterUrl", placeholder: "Poster Image URL" },
+            { name: "videoUrl", placeholder: "Video URL" },
+          ].map((field) => (
+            <input
+              key={field.name}
+              name={field.name}
+              placeholder={field.placeholder}
+              value={(form as any)[field.name]}
+              onChange={handleChange}
+              className="w-full mb-3 p-2 rounded bg-white/10 border border-white/10 outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          ))}
 
-          {/* SIMPLE URL FOR NOW */}
-          <input name="posterUrl" value={form.posterUrl} onChange={handleChange} placeholder="Poster Image URL" className="input" />
-
-          <input name="videoUrl" value={form.videoUrl} onChange={handleChange} placeholder="Video URL" className="input" />
-
-          <button className="w-full py-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg">
+          <button
+            type="submit"
+            className="w-full mt-3 bg-gradient-to-r from-purple-500 to-blue-500 py-2 rounded-lg font-semibold hover:opacity-90 transition"
+          >
             Create Event
           </button>
         </form>
 
-        {/* RIGHT EVENTS */}
-        <div className="flex flex-col gap-5 max-h-[500px] overflow-y-auto">
+        {/* ================= EVENTS GRID ================= */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
 
           {events.length === 0 && (
-            <p className="text-gray-400">No events yet</p>
+            <p className="text-gray-400">No events yet...</p>
           )}
 
           {events.map((event) => (
-            <div key={event.id} className="bg-white/10 rounded-xl overflow-hidden">
-
-              <div className="h-32">
+            <div
+              key={event.id}
+              className="bg-white/5 backdrop-blur-lg rounded-xl overflow-hidden shadow-lg hover:shadow-purple-500/30 transition-all duration-300 border border-white/10"
+            >
+              {/* IMAGE */}
+              <div className="h-32 w-full overflow-hidden">
                 <img
-                  src={event.posterUrl || "https://picsum.photos/500"}
+                  src={event.posterUrl || "https://picsum.photos/400/200"}
+                  alt="event"
                   className="w-full h-full object-cover"
                 />
               </div>
 
+              {/* CONTENT */}
               <div className="p-4">
-                <h3 className="font-semibold">{event.title}</h3>
-                <p className="text-sm text-gray-400">{event.description}</p>
+                <h2 className="text-lg font-semibold text-white">
+                  {event.title}
+                </h2>
 
-                <div className="flex justify-between text-sm mt-2">
+                <p className="text-sm text-gray-400 mt-1">
+                  {event.description}
+                </p>
+
+                <div className="flex justify-between mt-3 text-sm text-gray-300">
                   <span>₹ {event.price}</span>
                   <span>{event.branch}</span>
                 </div>
               </div>
-
             </div>
           ))}
 
         </div>
 
       </div>
-
-      <style jsx>{`
-        .input {
-          width: 100%;
-          padding: 10px;
-          border-radius: 10px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-      `}</style>
-
     </div>
-  );
+  )
 }
